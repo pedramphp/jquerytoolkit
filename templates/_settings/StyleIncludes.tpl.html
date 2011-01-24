@@ -1,0 +1,16 @@
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<!-- For the less-enabled mobile browsers like Opera Mini -->
+<link rel="stylesheet" media="handheld" href="<!--{$stylePath}-->handheld.css?v=1" />
+
+<!--{if $styleLibraryIncludes|@count gt 0}-->
+<!--{foreach from = $styleLibraryIncludes item = styleLibraryInclude}-->
+	<link rel = "stylesheet" href ="<!--{$styleLibraryPath}--><!--{$styleLibraryInclude}-->"/>
+<!--{/foreach}-->
+<!--{/if}-->
+<!--{if $styleInline}--><style type = "text/css"  ><!--{$styleInline}--></style><!--{/if}-->
+<!--{if $styleIncludes|@count gt 0}-->
+	<!--{foreach from = $styleIncludes item = styleInclude}-->
+		<link rel = "stylesheet" href = "<!--{$stylePath}--><!--{$styleInclude}-->"/>
+	<!--{/foreach}-->
+<!--{/if}-->

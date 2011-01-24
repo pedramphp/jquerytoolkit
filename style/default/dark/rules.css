@@ -1,0 +1,297 @@
+/* 
+  :: Css3designer.com Rules Stylesheet
+  :: Author:  Mahdi Pedram ( Abraham ) - http://www.mahdipedram.com
+  :: Twitter: @pedramphp
+  :: Version: 1.0 - OCT 2010
+
+
+  DIRECTORY
+  ==============  
+  - ADJUSTMENTS ( coloring, ::selection )
+  - CLEAR FIX
+  - VISIBILITY
+  - HELPER CLASSES
+    - IMAGE REPLACEMENT
+    - TRANSPARENCY
+    - ROUNDED CORNER
+    - HORIZONTAL UNORDER LIST
+    - BOX SHADOW
+    - OTHER
+    - ARROW
+*/
+
+
+/*   ADJUSTMENTS
+=================*/
+
+body, select, input, textarea { color:#444; }
+
+hr { border-top:1px solid #cccccc; }
+
+ins { background-color: #ff9; color: #000; }
+
+mark {
+  background-color: #ff9; color:#000; 
+  font-style: italic; font-weight:  bold; }
+
+strong, th { font-weight: bold; }
+
+/* These selection declarations have to be separate. */
+::-moz-selection{ background: #FFC3D9; color:#fff; text-shadow: none; }
+::selection {     background: #FFC3D9;  color:#fff; text-shadow: none; } 
+
+a:link { -webkit-tap-highlight-color: #FF5E99; }
+
+
+
+
+/*   CLEAR FIX
+===============*/
+
+
+/* Hides from IE-mac */
+* html .clearfix { height: 1%; }
+
+.clearfix { display: block; }
+
+.clearfix:after { 
+	
+  /* Layout*/
+  display: block; visibility: hidden; clear: both;
+	
+  /* Box Model */
+  height: 0;
+	
+  /* Text */
+	content: ".";  }
+
+.clearfix { display: inline-block; }
+
+
+.relative{ position: relative; }
+
+
+/*   VISIBILITY
+=================*/
+
+.hide { display: none !important;}
+
+.show { display: block !important; }
+.showInline { display: inline !important; }
+
+/* Hide for both screenreaders and browsers */
+.hidden { display:none; visibility: hidden; } 
+
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+
+/* Hide only visually, but have it available for screenreaders */
+.visuallyhidden { 
+  position: absolute !important;    
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px); }
+
+.hideText { text-indent:-9999px; }
+
+
+/*  HELPER CLASSES			
+======================*/
+
+
+  /*  IMAGE REPLACEMENT			
+  -------------------------*/
+	
+  .ir { 
+    /* Layout */
+    display: block; overflow:hidden;   
+		
+    /* Text */
+    background-repeat: no-repeat;
+    text-indent: -999em;  }
+
+
+
+  /*  TRANSPARENCY
+  ----------------------*/
+	
+  .transparentFifty {
+    -ms-filter:     "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter:         alpha(opacity = 50);
+    -moz-opacity:   0.5;
+    -khtml-opacity: 0.5;
+    opacity:        0.5; }
+	
+  .transparentSeventy {
+    -ms-filter:     "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+    filter:         alpha(opacity = 70);
+    -moz-opacity:   0.7;
+    -khtml-opacity: 0.7;
+    opacity:        0.7; }
+	
+  .transparentNinty {
+    -ms-filter:     "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+    filter:         alpha(opacity = 90);
+    -moz-opacity:   0.9;
+    -khtml-opacity: 0.9;
+    opacity:        0.9; }
+
+
+
+  /*  ROUNDED CORNER   
+  -----------------------*/
+  
+  .roundedCorner {
+	  -moz-border-radius:    10px;
+	  border-radius:         10px;
+	  -webkit-border-radius: 10px; }
+
+  .miniRoundedCorner {
+	  -moz-border-radius:    5px;
+	  border-radius:         5px;
+	  -webkit-border-radius: 5px; }
+
+  .roundedCornerTop, .roundedCornerTop-ul a{
+      -moz-border-radius-topright:     10px;
+      -moz-border-radius-topleft:      10px;
+      border-top-left-radius:         10px;
+      border-top-right-radius:        10px;
+      -webkit-border-top-left-radius:  10px; 
+      -webkit-border-top-right-radius: 10px; }
+ 
+  .roundedCornerRight {
+      -moz-border-radius-topright:    10px;
+      -moz-border-radius-bottomright: 10px;
+      border-bottom-right-radius:     10px;
+      border-top-right-radius:        10px;
+      -webkit-border-bottom-right-radius: 10px; 
+      -webkit-border-top-right-radius:10px; }
+
+  .miniRoundedCornerLeft {
+      -moz-border-radius-topleft:    5px;
+      -moz-border-radius-bottomleft: 5px;
+      border-bottom-left-radius:     5px;
+      border-top-left-radius:        5px;
+      -webkit-border-bottom-left-radius:5px; 
+      -webkit-border-top-left-radius: 5px; }
+	
+  /*  HORIZONTAL UNORDER LIST   
+  ----------------------------*/
+	
+  ul.horizontal { display: block; }
+	
+  ul.horizontal li { display: block; float: left; }
+
+
+
+
+  /*  BOX SHADOW   
+  --------------------------*/
+
+  .boxShadowWhiteFifty {
+    -webkit-box-shadow: 0 0 50px #fff;
+    -moz-box-shadow:    0 0 50px #fff;
+    box-shadow:         0 0 50px #fff; }
+
+  .boxShadowWhiteTwenty {
+    -webkit-box-shadow: 0 0 20px #fff;
+    -moz-box-shadow:    0 0 20px #fff;
+    box-shadow:         0 0 20px #fff; }
+
+	  
+	  .boxShadowWhiteFive {
+    -webkit-box-shadow: 0 0 5px #fff;
+    -moz-box-shadow:    0 0 5px #fff;
+    box-shadow:         0 0 5px #fff; }  
+
+  /*  ARROW  ( Triangle )
+  --------------------------*/	  
+  .arrow-right{
+    /* 
+     * set border-left-color
+     * set border-left-width = border-top-width * 2
+     * set border-top-width, border-bottom-height equal
+     */
+    display: block;
+    
+	width: 0; height: 0;
+    
+	border-width: 30px 0 30px 60px;
+	border-color: transparent transparent transparent #ccc;
+    border-style: solid; }
+	
+	
+  .arrow-left{
+    /* 
+     * set border-right-color
+     * set border-right-width = border-top-width * 2
+     * set border-top-width, border-bottom-height equal
+     */
+    display: block;
+	
+	width: 0; height: 0;
+    
+	border-width: 30px 60px 30px 0;
+	border-color: transparent #ccc transparent transparent;
+    border-style: solid; }
+  
+  
+  .arrow-up{
+    /* 
+     * set border-bottom-color
+     * set border-bottom-width = border-left-width * 2
+     * set border-left-width, border-left-height equal
+     */
+    display: block;
+	
+	width: 0; height: 0;
+    
+	border-width: 0 30px 60px 30px ;	
+    border-color: transparent transparent #ccc transparent;
+    border-style: solid; }
+
+
+  .arrow-down{
+    /* 
+     * set border-top-color
+     * set border-top-width = border-left-width * 2
+     * set border-left-width, border-left-height equal
+     */
+    display: block;
+	
+	width: 0; height: 0;
+	
+    border-width: 60px 30px 0 30px ;
+    border-color: #ccc transparent transparent transparent;
+    border-style: solid; }
+	  
+
+
+
+  /*  OTHER			
+  -------------------------*/
+
+  .floatLeft { float: left; }
+  
+  .floatRight { float: right; }
+  
+  .alignLeft { text-align: left; }
+  
+  .alignRight { text-align: right; }
+  
+  .alignCenter { text-align: center; }
+  
+  .halfWidth { width: 50%; }
+  
+  .capitilize { text-transform: capitalize; }
+
+  .blockBox { display: block; }
+  
+  .clearBoth { clear: both; }
+    
+  /* bicubic resizing for non-native sized IMG: */
+  .ie7 img { -ms-interpolation-mode: bicubic; }
+  
+   /* used on radio buttons and checkboxes to stop being sized as 100px wide in my input styles */
+  .nosize { width: auto; border: 0; }

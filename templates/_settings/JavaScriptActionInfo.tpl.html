@@ -1,0 +1,24 @@
+<!--{if $javascriptLibraryIncludes|@count gt 0}-->
+<!--{foreach from = $javascriptLibraryIncludes item = javascriptLibraryInclude}-->
+<script type = "text/javascript" language = "javascript"  src ="<!--{$javascriptLibraryPath}--><!--{$javascriptLibraryInclude}-->"   ></script>
+<!--{/foreach}-->
+<!--{/if}-->
+
+<!--{if $javascriptExternal|@count gt 0}-->
+<!--{foreach from = $javascriptExternal item = javascriptExternalItem}-->
+<script type = "text/javascript" language = "javascript"  src ="<!--{$javascriptExternalItem}-->"   ></script>
+<!--{/foreach}-->
+<!--{/if}-->
+
+<!--{if $javaScriptActionInfo}-->
+<script  type = "text/javascript" language = "javascript"> var $_LITE_ = <!--{$javaScriptActionInfo}-->;</script>
+<script type = "text/javascript" language = "javascript" src = "LiteFrame/javascript/liteframe.js" ></script>
+<!--{/if}-->
+<!--{if $javascriptInline}-->
+	<script type = "text/javascript" language = "javascript" ><!--{$javascriptInline}--></script>
+<!--{/if}-->
+<!--{if $javascriptIncludes|@count gt 0}-->
+<!--{foreach from = $javascriptIncludes item = javascriptInclude}-->
+	<script type = "text/javascript" language = "javascript"  src ="<!--{$javascriptPath}--><!--{$javascriptInclude}-->"   ></script>
+<!--{/foreach}-->
+<!--{/if}-->

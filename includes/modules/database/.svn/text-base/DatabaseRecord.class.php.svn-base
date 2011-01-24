@@ -1,0 +1,1053 @@
+<?php
+
+/** 
+ * @category	Modules
+ * @package 	Database
+ * @subpackage 	DatabaseRecord
+ * @author 		Juan Caldera
+ * @version 	1.0
+ * @since 		May 19, 2010 8:36:49 AM
+ * @copyright 	Vortal Group
+ *
+ */
+
+
+/**
+ * Current path
+ * @var string
+ */
+define('CURRENT_PATH' , pathinfo(__FILE__, PATHINFO_DIRNAME) . '/');
+
+/**
+ * Database Interface
+ */
+require_once( CURRENT_PATH . 'Database.interface.php');
+
+/**
+ * SQL Helper
+ */
+require_once( CURRENT_PATH . 'SQLHelper.class.php');
+
+/**
+ * Sanitizer
+ */
+require_once( CURRENT_PATH . 'Sanitize.class.php');
+
+/**
+ * Database Record Class Builder
+ */
+require_once( CURRENT_PATH . 'DatabaseRecordClassBuilder.php');
+
+/**
+ * Class responsible for loading records from the database.
+ *
+ * This creates either a single, or an array of DatabaseRecord objects,
+ * or optionally, a different class, preferrably a subclass of DatabaseRecord.
+ *
+ * The purpose of the loader is to get the user to supply all the neccessary information for
+ * a mysql_fetch_object to be called. [done internally in the loader]
+ *
+ * It also defines some magic functions that allows the user
+ *
+ * <code>
+ * <?php
+ *
+ *   <-------------------------------------> THE SETUP <-------------------------------------->
+ *
+ * // DatabaseRecordLoader any instance of an object that implements DatabaseInterface
+ *
+ *
+ * $connectionInformations = array(
+ * 				array('host'=>'localhost', 'user'=>'root', 'pass'=>'', 'type'=>'master');
+ *
+ * );
+ *
+ * // $connectionInformations is optional. the database manager uses database.config.ini by default
+ * // when no parameter is passed.
+ * $dbManager = new DatabaseManager($connectionInformations);
+ *
+ * // create the loader, and pass it the database that you want to work with.
+ * $loader = new DatabaseRecordLoader($dbManager, 'my_database');	// `my_database` is the database name
+ *
+ * // When using ExtendedRecordLoader instead of DatabaseRecordLoader
+ * // no need to pass $dbManager
+ * $loader = new ExtendedRecordLoader('db_name');
+ *   <--------------------------------> CREATE A NEW RECORD <--------------------------------->
+ *
+ * // these two calls are equivalent, the second one is a done through a Magic function
+ * $record = $loader->Create('Employee');				// employee is the table name
+ * $record = $loader->Create_Employee();
+ *
+ * $record->Name = "John";
+ * $record->Last = "Smith";
+ *
+ * // initial data can be also set by passing an array to the function
+ * $data = array('Name'=>'John', 'Last'=>'Smith');
+ * $record = $loader->Create('Employee', $data);
+ * $record = $loader->Create_Employee($data);
+ *
+ * $record->Save();										// this will insert the record into the database
+ *
+ * // HINT: Saving a newly created causes it's auto-increment ID to be set back into the object.
+ *
+ *
+ *   <--------------------------------> LOAD A SINGLE RECORD <-------------------------------->
+ *
+ * $queryInfo = array(  'conditions' => "Name = 'John' AND Last = 'Smith'"
+ * 						'order'		 => "Age DESC, Id ASC" );
+ *
+ * // these two calls are equivalent, the second one is a done through a Magic function
+ * $record = $loader->LoadSingle('Employee', $queryInfo);
+ * $record = $loader->LoadSingle_Employee($queryInfo);
+ * $record = $loader->LoadSingle('database_name', 'table_name', $queryInfo);
+ *
+ *   <--------------------------------> LOAD RECORD BY ID<-------------------------------->
+
+ *
+ *
+ * //load a record with ID=2; returns only a single record
+ * // the following calls are all equivalent
+ * $record = $loader->LoadId('table_name', 2);				// use the preferred database name
+ * $record = $loader->LoadId(array('database' => 'db_name', 'table'=>'table_name', 'Id'=>3));	// set a specific database name
+ * $record = $loader->LoadId(array('table'=>'table_name', 'Id'=>2)); // pass all the parameters as an array
+ * $record = $loader->LoadId('db_name', 'table_name', 2);			 // pass all parameters as parameters.
+ *
+ *
+ * $record = $loader->LoadId_tableName( 2 );
+ * $record = $loader->LoadId_tableName( array('Id'=>2) );
+ * $record = $loader->LoadId_tableName( array('Id'=>2, 'database' => 'db_name') );
+ * $record = $loader->LoadId_tableName( 'db_name', 2 );
+ *
+ *
+ *   <-------------------------------> LOAD MULTIPLE RECORDS <-------------------------------->
+ *
+ * $queryInfo = array(  'conditions' => "Name LIKE 'J%' AND Last LIKE 'S%'"
+ * 						'order'		 => "Name ASC, Last ASC",
+ * 						'limit'		 => 5 );
+ *
+ * // these two calls are equivalent, the second one is a done through a Magic function
+ * $records = $loader->Load_Employee($queryInfo);							// pass table as part of function call
+ * $record = $loader->Load('Employee', $queryInfo);							// pass table as an argument
+ * $record = $loader->Load('database_name', 'table_name', $queryInfo);		// specify a database
+ *
+ *   <-------------------------------> SAVE RECORDS <-------------------------------->*
+ *
+ * $record = $loader->Load('database_name', 'table_name', $queryInfo);
+ *
+ * foreach($records as $record) {
+ * 		$record->Salary *= 1.1;
+ * 		$record->Save();
+ * }
+ *
+ *   <--------------------------> SAVE MULTIPLE RECORDS <-------------------------------->*
+ *
+ *	for($i = 0; $i < 5; $i++)
+ *  {
+ *  	$records[$i] = $loader->Create(array('table'=>'table_name'));
+ *  	$records[$i]->RandomData = rand(5, 99999);
+ *  }
+ *
+ *  $loader->SaveMultiple($records);
+ *
+ *   <-------------------------------> DEBUGGING <-------------------------------->*
+ *
+ * $record->Debug();		// print all the values in the record
+ *
+ * ?>
+ * </code>
+ * @author Juan Caldera
+ *
+ */
+class DatabaseRecordLoader {
+
+	/**
+	 * Object used to communicate with the database
+	 * 
+	 * @access private
+	 * @var DatabaseInterface
+	 */
+	protected $dbManager;
+
+	/**
+	 * @var string
+	 * @access private
+	 */
+	private $preferredDatabase;
+
+	/**
+	 * @access private
+	 * @var string
+	 */
+	private $baseClass = 'DatabaseRecord';
+	
+	/**
+	 * @access private
+	 * @var string
+	 */
+	private $classSuffix = '_DatabaseRecord';
+	
+	/**
+	 * @access private
+	 * @var string
+	 */
+	private $classInfix = '__';
+	
+	/**
+	 * @access private
+	 * @var string
+	 */
+	private $classPrefix = '';
+	
+	/**
+	 * Database Record class Builder
+	 * @var DatabaseRecordClassBuilder
+	 */
+	private $classBuilder;
+
+
+	/**
+	 * When this is set, all tables will be prefixed with this value.
+	 * @var string
+	 */
+	private $tablePrefix = '';
+	
+	
+	
+	/**
+	 * This is set by the magic function __call whenever a function with an embeded table name is set
+	 * This is reset by __call before it returns a value.
+	 * @var string|boolean
+	 */
+	private $magicTable = false;
+
+
+	/**
+	 * Creates a new DatabaseRecord Loader
+	 * @param string 	$preferredDatabase 		Name of the preferred database. All Records from this class will only
+	 * 											interact with this database.
+	 * @param string	$class					Name of the class to instantiate. Ideally, the class should be
+	 * 											a subclass of DatabaseRecord.
+	 */
+	public function __construct(DatabaseInterface $dbManager, $preferredDatabase, $class='DatabaseRecord', array $fixes = null) {
+
+		$this->dbManager 			= $dbManager;
+		$this->preferredDatabase 	= $preferredDatabase;
+		$this->baseClass 			= $class;
+
+		if (empty($fixes)) {
+				
+			$fixes = array(	'prefix'=> $this->classPrefix,
+							'infix' => $this->classInfix,
+							'suffix'=> $this->classSuffix);
+				
+		}
+
+		$this->classBuilder = new DatabaseRecordClassBuilder(	$this->dbManager,
+																$this->baseClass,
+																$fixes);
+
+		/**
+		 * @internal PHP `Generics` hack-sauce
+		 * @var string
+		 */
+		$this->baseClass = $class;
+
+	}
+
+
+
+	/**
+	 * Converts an array of DatabaseRecord objects into PHP's stdclass objects.
+	 * 
+	 * @deprecated
+	 * @param array $records
+	 * @return array
+	 */
+	public function Standardize(array $records) {
+
+		$stdArray = array();
+		foreach($records as $record) {
+			$stdArray[] = $record->Standardize();
+		}
+
+		return $stdArray;
+
+	}
+
+
+
+	/**
+	 * The table prefix is appended to all table names access through this loader.
+	 * 
+	 * <code>
+	 * $loader->SetTablePrefix('prefix_');
+	 * </code>
+	 * 
+	 * @param string $prefix
+	 * 
+	 */
+	public function SetTablePrefix($prefix) { $this->tablePrefix = $prefix; }
+
+
+
+	/**
+	 * Loads serveral record off of the database
+	 *
+	 * @param	string 	$table
+	 * @param	string	$database
+	 * @param 	array	$query
+	 *
+	 * @return	DatabaseRecord					Returns a single object represetin the database record
+	 */
+	public function Load() {
+		
+		$queryArray = $this->ShapeArguments_ForLoad( func_get_args() );
+		
+		$this->AppendTablePrefix($queryArray['table']); 															// fix tablename to include the prefix
+		
+		$query = SQLHelper::Select( $queryArray );
+		$className = $this->classBuilder->Build( $queryArray['database'], $queryArray['table'] );
+		$records = $this->dbManager->FetchAllRowsObject( 	$query,  
+															$className, 
+															array( 	$this->dbManager,
+																	$queryArray['table'],
+																	$queryArray['database'] )	);
+
+		if (empty($records)) 	{ return false; }
+		else 					{ return $records; }
+
+	}
+
+
+
+	/**
+	 * Returns a single DatabaseRecord, rather than an array of DatabaseRecord objects.
+	 * 
+	 * @param 	array				$query		The query to run against the database.
+	 * @return 	DatabaseRecord
+	 *
+	 */
+	public function LoadSingle() {
+		
+		$query = $this->ShapeArguments_ForLoad(func_get_args());
+		$query['limit'] = 1;
+
+		$results = $this->Load($query);
+		
+		if ($results !== false) { return $results[0]; }
+		else 					{ return false; }
+
+	} /* </LoadSingle> */
+
+
+
+	/**
+	 * Load a single record that contains a specific Id.
+	 * 
+	 * @param 	string 			$database 		Database containing the table [optional]
+	 * @param 	string 			$table 			The Table that is to be queried
+	 * @param 	integer 		$id 			The Id of the record you're looking for
+	 * @return DatabaseRecord
+	 *
+	 */
+	public function LoadId() { return $this->LoadSingle( $this->ShapeArguments_ForLoadId(func_get_args()) ); }
+
+
+
+	/**
+	 * Creates a new record that will be inserted into the database
+	 * 
+	 * @param 	string			$table			Table name
+	 * @param	array			$initialValues
+	 * 
+	 * @return	DatabaseObject					Returns a new DatabaseObject
+	 */
+	public function Create() {
+
+		$params = $this->ShapreArguments_ForCreate( func_get_args() );
+		extract( $params );
+		
+		$this->AppendTablePrefix($table); 
+		$class = $this->classBuilder->Build( $database, $table );
+		$obj = new $class($this->dbManager, $table, $database, true);
+
+		// initialize the object with initialize values if supplied.
+		if (!empty($initialValues)) { foreach($initialValues as $key => $value) { $obj->$key = $value; } }
+		
+		return $obj;
+
+	} /* </Create> */
+
+
+
+	/**
+	 * Save a list of database records. This is useful on newly created records, as it creates a more efficient queries.
+	 *
+	 * @param array	$list
+	 *
+	 */
+	public function SaveMultiple(array $list) {
+
+		$toInsert = array();
+		
+		foreach($list as $record) {
+				
+			// Records already in the database needs to be done one by one.
+			if ($record->IsNew() === false) { $record->Save(); }
+				
+			// new records can be inserted together, but incase the caller mixed up
+			// a bunch of records from different database, we have to group them by table.
+			else { $toInsert["{$record->GetDatabase()}.{$record->GetTable()}"][] = $record; }
+				
+		}
+
+		$inserts = 0;
+		foreach ($toInsert as $records) { $inserts += $this->InsertMany($records); }
+		
+		return $inserts;
+		
+	} /* </SaveMultiple> */
+
+
+
+	/**
+	 * Reroutes Load(Single)?(TableName) calls to the formally defined Load and LoadSingle methods.
+	 *
+	 * @param	string		$name		Name of the function that was just called
+	 * @param	array		$arguments	An array of all the arguments passed when the function was called.
+	 * @return	mixed					Returns either an array of DatabaseRecords, a single DatabaseRecords, or false.
+	 */
+	public function __call($name, $arguments) {
+				
+		$validChars 	= 'a-zA-Z0-9_';
+		$loadRegRule 	= "/^Load(?<DoSingle>Single)?_(?<table>[$validChars]+)$/";
+		$createRegRule 	= "/^Create_(?<table>[$validChars]+)$/";
+		$loadIdRegRule 	= "/^LoadId_(?<table>[$validChars]+)$/";
+		
+		/**
+		 * @internal	Go through each regex rule, and find one that matches the function called.
+		 * 				If an appropriate function call is found, save the magic table provided (if any) and relay the call
+		 * 				to the appropriate non-magic function.
+		 */
+		if 		( preg_match($loadRegRule,   $name, $match)) 	{ $this->SetMagicTable($match); $action = 'Load'. $match['DoSingle']; } 
+		elseif 	( preg_match($createRegRule, $name, $match)) 	{ $this->SetMagicTable($match); $action = 'Create'; } 
+		elseif 	( preg_match($loadIdRegRule, $name, $match)) 	{ $this->SetMagicTable($match); $action = 'LoadId'; } 
+		else  													{ throw new BadMethodCallException( "$name is not a valid function call." ); }			
+		
+		$return = call_user_func_array( array($this, $action), $arguments);
+		$this->ResetMagicTable();
+		return $return;	
+		
+	} /* </__call> */
+	
+	
+	
+	/**
+	 * Reset the Magic Table variable
+	 * @access  private
+	 */
+	private function ResetMagicTable() { $this->magicTable = false; }
+	
+	
+	
+	/**
+	 * Set the Magic Table variable
+	 * 
+	 * @param 	array 			$match	This is typically the match array initialized the preg_match
+	 * @access 	private
+	 */
+	private function SetMagicTable(array $match) { $this->magicTable = ( !empty($match['table']) ) ? $match['table'] : false; }
+
+
+
+	/**
+	 * Helper function for save multiple.
+	 *
+	 * @param array $records An array of database records from a single table.
+	 * @access private
+	 */
+	private function InsertMany(array $records, $allowOverwrite = false) {
+
+
+		foreach($records as $table => $record) {
+			$values[] = $record->ToArray();
+		}
+
+		$queryParams = array(		'table'	=> $records[0]->GetTable(),
+									'database' =>$records[0]->GetDatabase(),
+									'values' =>$values);
+
+
+		$query = SQLHelper::InsertMultiple($queryParams, $allowOverwrite, array($this->dbManager, 'EscapeString'));
+
+		return $this->dbManager->Query($query);
+
+	} /* </InsertMany> */
+	
+	
+	
+	/**
+	 * Given the $queryArray, this function will append the table prefix (if any) to the table.
+	 * @param 	string $table
+	 * @return  string
+	 * @access 	private
+	 */
+	private function AppendTablePrefix(& $table) { $table = $this->tablePrefix . $table; return $table; }
+
+
+
+	/**
+	 * Generate an array ($query) that will include all the neccessary elements to be passed to SQLHelper
+	 *
+	 * @param 	array 		$args		This is typically the array from func_get_args
+	 * @return 	array
+	 * @access 	private
+	 */
+	private function ShapeArguments_ForLoad(array $args) {
+		
+		/**
+		 * Database Query Goes Here!!
+		 * 
+		 * @internal
+		 * @var array
+		 */
+		$query = array();
+		if ($this->magicTable) { $query['table'] = $this->magicTable; }		// set the magic table, if it is set.
+		$tableIsSet = !empty($query['table']);								// helper flag for lazy people
+		
+		/**
+		 * @internal We will process the arguments based on the number of parameters sent
+		 * 			 Hacky PHP overloading for teh lose.
+		 */
+		switch(count($args)) {		
+			
+			/**
+			 * @internal	1 Parameter
+			 * 				possible cases:	Load($query)
+			 * 								Load_table(database)
+			 * 								Load(table)
+			 * 
+			 */ 
+			case 1:		if ( is_array($args[0]) )	{ $query = array_merge( $args[0], $query ); }		// treat argument as $query
+						elseif ( $tableIsSet ) 		{ $query['database'] =  $args[0]; }					// treat argument as database name
+						else 						{ $query['table'] 	 =  $args[0]; }					// treat argument as table name
+						
+						break;
+			
+			/**
+			 * @internal	2 Parameters
+			 * 				possible cases:	Load_table(database, $query)
+			 * 								Load(table, $query)
+			 * 								Load(database, table)
+			 * 
+			 */ 
+			case 2:		if ( is_array($args[1]) ) { 
+				
+							$query = array_merge( $args[1], $query ); 									// treat argument[1] as $query, if it is an array
+							if ( $tableIsSet ) 	{ $query['database'] = $args[0]; }						// treat argument[0] as database name
+							else 				{ $query['table'] 	 = $args[0]; }} 
+							
+						else { 																			// otherwise, first: database, second: table
+								
+							$query['database'] 	= $args[0]; 
+							$query['table'] 	= $tableIsSet ? $query['table'] : $args[1]; }
+							
+						break;
+			
+			/**
+			 * @internal	3 Parameters
+			 * 				possible cases:	Load(database, table, $query)
+			 * 
+			 */ 
+			case 3:		$query 					= array_merge( $args[2], $query );						// args[2] contains all the query informaiton: condition, limit, order, etc.
+						$query['database'] 		= $args[0];												// args[0] contains the database name
+						$query['table']	 		= $args[1];												// args[1] contains the table name
+						
+						break;
+			
+
+			/**
+			 * @internal	0 Parameter
+			 * 				possible case Load_table();
+			 * 
+			 */
+			case 0:		break;
+						
+			/**
+			 * @internal	Bad Method Call
+			 */
+			default:	throw new BadMethodCallException("Invalid function call: `Load`");
+					
+		} /* </switch> */
+
+		if ( empty($query['table']) ) 		{ throw new InvalidArgumentException( "Table is required." ); }	// self-explanatory
+		if ( !isset($query['database']) ) 	{ $query['database'] = $this->preferredDatabase; }				// Use the default database, if one is not supplied.
+		if ( !empty($query['condition']) ) 	{ $query['conditions'] = $query['condition']; }					// Rename $condition to $conditions.
+		
+		$query['fields'] = array('*');																		// load all fields in the table
+		
+		return $query;																						// and we're done
+
+	} /* </ShapeArguments_ForLoad> */
+
+
+
+	/**
+	 * Generate an array ($query) that will include all the neccessary elements to be passed to SQLHelper
+	 *
+	 * @param 	array 		$args		This is typically the array from func_get_args
+	 * @return 	array
+	 * @access 	private
+	 */
+	private function ShapreArguments_ForCreate(array $args) {
+		
+		$initialValues = array();								// initialization array
+		$database = $this->preferredDatabase;					// database
+		if ($this->magicTable) { $table = $this->magicTable; }	// table
+		$tableIsSet = !empty($table);							// conditional flag
+		
+		/**
+		 * @internal Uber PHP Overloading-hackage.
+		 * @todo	 Implement proper overloading functions when PHP supports it.
+		 */
+		switch(count($args)) {
+			
+			/**
+			 * @internal	0 Parameter
+			 * 				Possible Cases: Create_table();
+			 */
+			case 0:			break;
+			
+			/**
+			 * @internal	1 Parameter
+			 * 				Possible Cases: Create_table(database)
+			 * 								Create_table($initial)
+			 * 								Create		(table)
+			 */
+			case 1:			if 		( is_array($args[0]) ) 	{ $initialValues = $args[0]; }
+							elseif 	( $tableIsSet )		 	{ $database = $args[0]; }
+							break;
+			
+			/**
+			 * @internal	2 Parameters
+			 * 				Possible Cases:	Create_table(database, $initial)
+			 * 								Create		(database, table)
+			 * 								Create		(table, $initial)
+			 */
+			case 2:			if (is_array($args[1])) { 
+								if 	( $tableIsSet ) { 	list($database, $initialValues) 	= $args; } 
+								else 				{ 	list($table, $initialValues) 		= $args; }} 
+							else { list($database, $table) = $args; }
+							break;
+
+			/**
+			 * @internal	3 Parameters
+			 * 				Possible Cases: Create		(database, table, $initial)
+			 */
+			case 3:			list($database, $table, $initialValues) = $args; break;
+			
+			/**
+			 * @internal	Invalid Function Call
+			 */
+			default:		throw new BadMethodCallException("Invalid Function Call: Create"); break;
+		
+		}
+
+		/**
+		 * @internal Do some checks to make sure $database and $table are set.
+		 */
+		if ( empty($table) ) { throw new InvalidArgumentException("Missing Require Parameter: Table"); }
+		$database = ( empty($database) ) ? $this->preferredDatabase : $database;
+			
+		return compact("database", "table", "initialValues");
+
+	} /* </ShapreArguments_ForCreate> */
+	
+	
+	
+	/**
+	 * Psudo-overloader for LoadId. This function standardizes the parameters passed to LoadId and returns a workable array.
+	 * 
+	 * @param array $args
+	 * @return array
+	 * @access private
+	 */
+	private function ShapeArguments_ForLoadId($args) {
+		
+		$query = array();
+		$query['table'] = $this->magicTable;
+		$tableIsSet = !empty($this->magicTable);
+				
+		switch(count($args)) {
+			
+			/**
+			 * @internal	1 Parameter
+			 * 				Possible Cases:	LoadId_table(id)
+			 */ 
+			case 1:		$id = $args[0]; break;
+
+			/**
+			 * @internal	2 Parameters
+			 * 				possible Cases:	LoadId_table(database, id)
+			 * 								LoadId(table, id)
+			 */ 
+			case 2:		if ( $tableIsSet ) 	{ list($database, $id) 	= $args; }
+						else 				{ list($table, $id) 	= $args; } 
+						
+						
+						break;
+						
+			/**
+			 * @internal	3 Parameters
+			 * 				Possible Cases: LoadId(database, table, id)
+			 */
+			case 3:		list ($database, $table, $id) = $args; break;
+
+			/**
+			 * @internal Bad Method Call
+			 */
+			default: 	throw new BadMethodCallException( "Invalid function call: `Load`" );
+
+		}
+		
+		$conditions = array('Id' => $id);
+		if (!$tableIsSet) { unset($query['table']); }
+		$query = array_merge( compact('database', 'table', 'conditions'), $query);		
+		
+		return $query;
+
+	} /* </ShapeArguments_ForLoadId> */
+	
+} /* </DatabaseRecordLoader> */
+
+
+
+
+
+
+/**
+ * All Classes representing a database record are derived from this class
+ *
+ * Each object of this class represents a single record from a single table on the database.
+ * This object should not be instantiated explicitly, but instead created through the loader
+ * object.
+ *
+ *
+ * @package Database
+ * @subpackage DatabaseRecord
+ * @author Juan Caldera
+ *
+ */
+abstract class DatabaseRecord  {
+
+
+	/**
+	 * Database name
+	 * @access private
+	 */
+	private 	$database;							// database name
+
+	/**
+	 * Flags if the record does not exist in the database
+	 * @access private
+	 */
+	private 	$isNew = false;						// flags the object as a new record
+
+	/**
+	 * Table name
+	 * @access private
+	 */
+	private 	$table;								// table name
+
+	/**
+	 * Primary keys array
+	 * @access private
+	 */
+	private 	$primaryKeys = array();				// fields considered primary keys
+
+	/**
+	 * Instance of a DatabaseInterface object
+	 * @access private
+	 */
+	private 	$dbManager;							// database connection manager
+
+	/**
+	 * Array of the database schema related to this record
+	 * @access private
+	 */
+	protected 	$schema;							// the object copy of the schema
+
+
+	/**
+	 * Constructor
+	 *
+	 * @param 	string			$table			Table name
+	 * @param	string			$database		Database name, null to use default
+	 */
+	public function __construct(DatabaseInterface $dbManager, $table, $database, $isNew = false) {
+
+		// database connection
+		$this->dbManager = $dbManager;
+
+		// these two values ensures that we're saving to the correct table/database
+		$this->database = $database;
+		$this->table = $table;
+
+		$this->schema = $this->LoadSchema();
+
+		$this->isNew = $isNew;
+		if ($this->isNew === false) { $this->RememberCurrentPrimaryKeys(); }
+
+	}
+
+
+
+	/**
+	 * Returns the schema of the table
+	 *
+	 * This function should simply return the full results of Describe `tablename`
+	 * @return array
+	 *
+	 */
+	abstract protected function LoadSchema();
+	
+	
+	
+	/**
+	 * Determines if this record is a new record.
+	 *
+	 * New records are records that do not yet exist in the database
+	 * (Calling Save will cause them to be INSERTed, instead of UPDATE
+	 *
+	 * @return boolean
+	 *
+	 */
+	public function IsNew() { return $this->isNew; }
+
+
+
+	/**
+	 * Delete the record from the database
+	 *
+	 * @return boolean	True on successfull deletion, false otherwise
+	 */
+	public function Delete() {
+
+		// if $isNew = true, then this record does not exist in the database yet.
+		if ($this->isNew) return false;
+
+		$queryParams = array( 	'table'			=> $this->table,
+								'database'		=> $this->database,
+								'conditions'	=> $this->primaryKeys,
+								'limit'			=> 1);
+
+		$query = SQLHelper::Delete($queryParams, array($this->dbManager, 'EscapeString'));
+
+		$result = $this->dbManager->Query($query);
+
+		// if this record has been deleted, it's as if it's a brand new record
+		$this->isNew = ($result) ? true : false;
+
+		return ($result) ? true : false;
+	}
+
+
+
+	/**
+	 * Saves the record back into the database
+	 *
+	 * @param	boolean			$allowOverwrite	Allows new records from overwriting existing ones. Only pertinent to new records.
+	 * @return 	boolean							True on Success, false otherwise.
+	 */
+	public function Save($allowOverwrite = false) {
+
+		// assmeble the INSERT/UPDATE query statement
+		$queryParams = array(	'table' 		=> $this->table,
+								'database' 		=> $this->database,
+								'values'		=> $this->ToArray(),
+								'limit'	   		=> 1,					 // INSERT should ignore this
+								'conditions' 	=> $this->primaryKeys ); // and this
+
+		if ($this->isNew) { $query = SQLHelper::Insert($queryParams, $allowOverwrite, array($this->dbManager, 'EscapeString'));
+		} else {  $query = SQLHelper::Update($queryParams, array($this->dbManager, 'EscapeString'));  }
+
+		// run the query against the database
+		$result =  $this->dbManager->Query($query);
+
+		if ($result) {	// if saving is successfull
+
+			// grab the auto-increment ID and set it back into the object (if applicable)
+			if ($this->isNew === true) $this->SetAutoincrementPrimaryKey();
+
+			// this record exist in the database now, so it's no longer new
+			$this->isNew = false;
+
+			// reset the primary keys (in case they have changed)
+			$this->RememberCurrentPrimaryKeys();
+
+		}
+
+		return $result;
+
+	}
+	
+	
+	
+	/**
+	 * Given a field name with incorrect casing, return the proper casing for that field name
+	 * 
+	 * Due to php and mysql having different case-sensitivities for field names, this function
+	 * enables us to remove the behavioral disparity between php and mysql.
+	 * 
+	 * @param 	string $target
+	 * @return 	string
+	 * @access 	private
+	 */
+	protected function GetCorrectFieldNameCase($target) { 
+		
+		$target = strtolower($target);
+		foreach($this->GetFieldNames() as $field) {
+			if (strtolower($field) == $target) { return $field; }
+		}
+		
+		throw new InvalidArgumentException("Field $target does not exist in {$this->table}");
+		
+	}
+
+
+
+	/**
+	 * Returns the record's database schema
+	 *
+	 * @return array
+	 */
+	public function GetFieldNames() {
+
+		$fieldNames = array();
+		foreach($this->schema as $index => $fieldInfo) { $fieldNames[] = $fieldInfo['Field']; }
+		return $fieldNames;
+
+	}
+
+
+	/**
+	 * Returns the table cotaining this record
+	 *
+	 * <code>
+	 * <?php
+	 * $tableName = $record->GetTable();
+	 * ?>
+	 * </code>
+	 * @return string
+	 *
+	 */
+	public function GetTable() { return $this->table; }
+
+	/**
+	 * Returns the database containing this record
+	 *
+	 * <code>
+	 * <?php
+	 * $databaseName = $record->GetDatabase();
+	 * ?>
+	 * </code>
+	 * @return string
+	 *
+	 */
+	public function GetDatabase() { return $this->database; }
+
+
+
+	/**
+	 * Returns all the record values as an array, indexed by the field name
+	 *
+	 * @return array
+	 */
+	public function ToArray() {
+
+		$array = array();
+		foreach($this->schema as $field) {
+			$fieldName = $field['Field'];
+			$array[ $fieldName ] = $this->$fieldName;
+		}
+
+		return $array;
+		
+	} /* </ToArray> */
+
+
+
+	/**
+	 * Only for backwards compatibility.
+	 * @deprecated
+	 * @return DatabaseRecord
+	 */
+	public function Standardize() { return $this; }
+
+
+
+	/**
+	 * Saves the current primary keys.
+	 *
+	 * The primary keys will be used in order to save this record back into the database
+	 *
+	 */
+	private function RememberCurrentPrimaryKeys() {
+
+		// new records do not have primary keys.
+		if ($this->isNew === true) return;
+
+		// loop through all the primary keys, and save them
+		foreach($this->schema as $fieldInfo) {
+			if ($fieldInfo['Key'] == 'PRI') { $this->primaryKeys[ $fieldInfo['Field'] ] = $this->{$fieldInfo['Field']}; }
+		}
+		
+	} /* </RememberCurrentPrimaryKeys> */
+
+
+
+	/**
+	 * Returns the information regarding a given field.
+	 * @param	string	$field		Name of the field to be returned.
+	 * @return 	array
+	 */
+	protected function GetSchemaInfo($field) {
+
+		// go through all the arrays inside schema and find the requested information
+		foreach($this->schema as $schema) { if ($schema['Field'] == $field) return $schema; }
+
+		// if we make it this far, then the field requested does not exist in the table
+		return false;
+
+	} /* </GetSchemaInfo> */
+
+
+
+	/**
+	 * Set the auto-increment field to the value of LastInsertID();
+	 * @access private
+	 *
+	 */
+	private function SetAutoincrementPrimaryKey() {
+
+		// grab the last inserted ID from the database
+		$value = $this->dbManager->LastInsertID();
+
+		// find the field that has the auto_increment flag, and set the fields value accordingly.
+		foreach($this->schema as $fieldInfo) {
+			if ($fieldInfo['Extra'] == 'auto_increment') { $this->{$fieldInfo['Field']} = $value; }
+		}
+
+	} /* </SetAutoincrementPrimaryKey> */
+	
+	
+	
+	/**
+	 * Print The values of the fields of the record
+	 */
+	public function Display() { echo "<pre>".print_r($this->ToArray(), true)."</pre>"; }
+
+
+}
+
+?>

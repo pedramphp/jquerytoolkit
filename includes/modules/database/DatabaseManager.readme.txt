@@ -1,0 +1,103 @@
+
+									----Glossary----
+Master:	type of database connection where WRITE queries are sent. WRITE queries include 
+		UPDATE, INSERT, and DELETE
+Slave: Type of database connection where READ queries are set. Read queries include
+		SELECT, EXPLAIN, SHOW, DESCRIBE
+		
+		
+									------HOWTO------
+		
+A) SETUP:
+
+Before the database manager can be used, connection information must be provided. There
+are three ways to pass these information.
+
+		I) Simple Arguments
+			
+			$dbManager = new DatabaseManager('host', 'user', 'pass', 'default_database', 'port');
+
+
+		I) INI file.
+			a) Create a simple text file with [optional] extension `ini`.
+			b) Define all your database connection information using these guidelines.
+		
+							< --- myinifile.ini --- >
+							
+							[connection_name1]	
+								server=192.168.1.1	;; host server address
+								port=				;; mysql port
+								user=root			;; username
+								pass=				;; password
+								database=users		;; default database
+								type=master			;; master | slave | [empty]
+								
+							[connection_name2]	
+								server=192.168.1.2
+								port=
+								user=root
+								pass=
+								database=users
+								type=slave
+								
+							 < -- /myinifile.ini --- >
+				<?php
+				
+				$dbManager = new DatabaseManager('myinifile.ini');
+				
+				?>
+		
+				NOTE: Connection name can be any name you want to give to that specific 
+				connection. You can use these names to specify which connection you want 
+				to use by calling SetPreferredConnection(); 
+				
+				The `type` is optional, and can be used if you wish to specify the 
+				connection as either master or slave. If none is specified (leave it blank), 
+				then theconnection will be classified as both, and can recieve any types 
+				of connection.
+				
+			c) Whenever you instantiate a DatabaseManager class, pass the file path to the INI file.
+		
+		II) Array of arrays.
+			a) Consider how the INI file in part (I) will be parsed using PHP's parse_ini_file().
+			b) To pass an array instead of an INI file, simply emulate how the parsed file would 
+				look like.
+			c) 
+			
+							< --- PHP Array --- >
+							
+							$connections = array(
+								'connection_name1' => array(
+										'server'	=> '192.168.1.1',
+										'user'		=> 'root',
+										'pass'		=> '',
+										'type'		=> 'master'),
+								'connection_name2' => array(
+										... )
+							
+							);
+							
+							$dbManager = new DatabaseManager($connections);
+							
+			d)	Simply pass this array instead of the file path into the constructor, and 
+				it should work without a difference. Again, the names you give the connections
+				can be used (although you do not need to) to specify to the manager which 
+				connection you wish to use.
+				
+				If no connection type is specified, the connection can be used as both master
+				and slave.
+				
+				
+B) Examples
+
+
+
+	$dbManager = new DatabaseManager();	// this would load the default Database.config.ini 
+	
+	// optional
+	$dbManager->SetPreferredConnections(master_connection_name, slave_connection_name);
+	
+	$results = $dbManager->Query("SELECT Firstname, Lastname FROM Employees");
+	$while($row = $db->Manager->FetchAssoc($results)) {
+		echo $row['Firstname'] . ' ' . $row['Lastname'];
+	}

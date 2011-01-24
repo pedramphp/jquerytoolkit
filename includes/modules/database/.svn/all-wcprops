@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/masterlib/!svn/ver/165/trunk/database
+END
+DatabaseExceptions.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/masterlib/!svn/ver/132/trunk/database/DatabaseExceptions.class.php
+END
+SQLBuilder.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/masterlib/!svn/ver/165/trunk/database/SQLBuilder.class.php
+END
+Sanitize.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/masterlib/!svn/ver/164/trunk/database/Sanitize.class.php
+END
+DatabaseRecordClassBuilder.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/masterlib/!svn/ver/132/trunk/database/DatabaseRecordClassBuilder.php
+END
+DatabaseStatic.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/masterlib/!svn/ver/161/trunk/database/DatabaseStatic.class.php
+END
+Example.VortalDatabaseConfig.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/masterlib/!svn/ver/132/trunk/database/Example.VortalDatabaseConfig.class.php
+END
+Database.interface.php
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/masterlib/!svn/ver/155/trunk/database/Database.interface.php
+END
+DatabaseManager.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/masterlib/!svn/ver/154/trunk/database/DatabaseManager.class.php
+END
+DatabaseManager.readme.txt
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/masterlib/!svn/ver/3/trunk/database/DatabaseManager.readme.txt
+END
+ExtendedRecord.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/masterlib/!svn/ver/132/trunk/database/ExtendedRecord.class.php
+END
+SQLHelper.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/masterlib/!svn/ver/132/trunk/database/SQLHelper.class.php
+END
+DatabaseRecord.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/masterlib/!svn/ver/161/trunk/database/DatabaseRecord.class.php
+END
+index.php
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/masterlib/!svn/ver/132/trunk/database/index.php
+END
+Example.DatabaseConfig.class.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/masterlib/!svn/ver/132/trunk/database/Example.DatabaseConfig.class.php
+END

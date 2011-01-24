@@ -1,0 +1,45 @@
+<!--{assign var = 'action'       		  value=$_LITE_.ACTION}-->
+<!--{assign var = 'includeTemplate'       value=$_LITE_.VARS.fileSystemPaths.templateIncludePath}-->
+<!--{assign var = 'actionTemplate'        value=$_LITE_.VARS.fileSystemPaths.templateActionPath}-->
+<!--{assign var = 'layoutTemplate'        value=$_LITE_.VARS.fileSystemPaths.templateActionPath}-->
+<!--{assign var = 'settingsTemplate'      value=$_LITE_.VARS.fileSystemPaths.settingsPath}-->       
+<!--{assign var = 'javaScriptActionInfo'  value=$_LITE_.VARS.javaScriptActionInfo}-->
+<!--{assign var = 'javascriptBottomPage'  value=$_LITE_.VARS.javascriptBottomPage}-->
+<!--{assign var = 'javascriptPath'        value=$_LITE_.VARS.javascriptPath}-->
+<!--{assign var = 'javascriptLibraryPath' value=$_LITE_.VARS.javascriptLibraryPath}-->
+<!--{assign var = 'javascriptLibraryIncludes' value=$_LITE_.VARS.javascriptLibraryIncludes}-->
+<!--{assign var = 'javascriptExternal'    value=$_LITE_.VARS.javascriptExternal}-->
+<!--{assign var = 'javascriptIncludes'    value=$_LITE_.VARS.javascriptIncludes}-->
+<!--{assign var = 'javascriptInline'      value=$_LITE_.VARS.javascriptInline}-->       
+<!--{assign var = 'stylePath'             value=$_LITE_.VARS.stylePath}-->
+<!--{assign var = 'imagePath'             value=$_LITE_.VARS.imagePath}-->
+<!--{assign var = 'styleIncludes'         value=$_LITE_.VARS.styleIncludes}-->
+<!--{assign var = 'styleInline'           value=$_LITE_.VARS.styleInline}-->
+<!--{assign var = 'styleLibraryIncludes'  value=$_LITE_.VARS.styleLibraryIncludes}-->
+<!--{assign var = 'styleLibraryPath'      value=$_LITE_.VARS.styleLibraryPath}-->
+<!--{assign var = 'applicationPath'       value=$_LITE_.VARS.applicationPath}-->
+<!--{assign var = 'requestVariable'       value=$_LITE_.REQUEST}--> 
+<!--{include file=$includeTemplate|cat:"htmlTag.tpl.html"}-->
+    <head>
+      <title> <!--{$SiteData.title}--></title>
+      <!--[if IE]><![endif]-->
+      <!--{include file= $settingsTemplate|cat:"meta.tpl.html"}-->
+      <!--{include file = $settingsTemplate|cat:"StyleIncludes.tpl.html"}--> 
+      <!--{if $javascriptBottomPage eq false}-->
+    	<!--{include file = $settingsTemplate|cat:"JavaScriptActionInfo.tpl.html"}-->
+      <!--{/if}-->   
+      <!--[if lt IE 9]>
+		<script src="<!--{$javascriptPath|cat:"html5.js"}-->" type="text/javascript" charset="utf-8"></script>
+	  <![endif]-->
+    </head>
+    <body>    
+        <!--{include file = $includeTemplate|cat:"bg-static.tpl.html"}-->
+		<div id='container' class="relative">
+		<!--{include file = $includeTemplate|cat:"container-inner.tpl.html"}-->
+		</div><!--/ #container  -->    	
+		<!--{if $javascriptBottomPage eq true}-->
+		<!--{include file = $settingsTemplate|cat:"JavaScriptActionInfo.tpl.html"}-->
+		<!--{/if}-->
+		<!--{include file = $includeTemplate|cat:"google/googleAnalytics.tpl.html"}-->
+	</body>
+</html>

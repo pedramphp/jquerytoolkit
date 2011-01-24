@@ -1,0 +1,10 @@
+K 10
+svn:ignore
+V 69
+*
+*.buildpath
+*.project
+DatabaseConfig.class.php
+database.config.ini
+
+END
