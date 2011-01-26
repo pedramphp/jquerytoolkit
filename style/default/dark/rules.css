@@ -52,7 +52,7 @@ a:link { -webkit-tap-highlight-color: #FF5E99; }
 /* Hides from IE-mac */
 * html .clearfix { height: 1%; }
 
-.clearfix { display: block; }
+.clearfix { display: block; clear:both;}
 
 .clearfix:after { 
 	
@@ -64,8 +64,6 @@ a:link { -webkit-tap-highlight-color: #FF5E99; }
 	
   /* Text */
 	content: ".";  }
-
-.clearfix { display: inline-block; }
 
 
 .relative{ position: relative; }

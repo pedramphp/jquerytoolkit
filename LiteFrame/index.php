@@ -385,7 +385,8 @@ class  LiteFrame {
     				 "javascriptInline",
     				 "javascriptIncludes",
     				 "javascriptLibraryIncludes",
-    				 "styleLibraryIncludes");
+    				 "styleLibraryIncludes",
+    				 "javascriptExternal");
     	
     	foreach( $arr as $key => $value ){
 	    	if(!isset(self::$yAction['_LITE_']['VARS'][$value])){

@@ -19,9 +19,9 @@
 <!--{assign var = 'styleLibraryPath'      value=$_LITE_.VARS.styleLibraryPath}-->
 <!--{assign var = 'applicationPath'       value=$_LITE_.VARS.applicationPath}-->
 <!--{assign var = 'requestVariable'       value=$_LITE_.REQUEST}--> 
-<!--{include file=$includeTemplate|cat:"htmlTag.tpl.html"}-->
+<!--{include file=$settingsTemplate|cat:"htmlTag.tpl.html"}-->
     <head>
-      <title> <!--{$SiteData.title}--></title>
+      <title></title>
       <!--[if IE]><![endif]-->
       <!--{include file= $settingsTemplate|cat:"meta.tpl.html"}-->
       <!--{include file = $settingsTemplate|cat:"StyleIncludes.tpl.html"}--> 
@@ -29,17 +29,17 @@
     	<!--{include file = $settingsTemplate|cat:"JavaScriptActionInfo.tpl.html"}-->
       <!--{/if}-->   
       <!--[if lt IE 9]>
-		<script src="<!--{$javascriptPath|cat:"html5.js"}-->" type="text/javascript" charset="utf-8"></script>
+		<script src="<!--{$javascriptLibraryPath|cat:"html5.js"}-->" type="text/javascript" charset="utf-8"></script>
 	  <![endif]-->
     </head>
     <body>    
-        <!--{include file = $includeTemplate|cat:"bg-static.tpl.html"}-->
-		<div id='container' class="relative">
-		<!--{include file = $includeTemplate|cat:"container-inner.tpl.html"}-->
+        <div id='container'>
+			<!--{include file = $includeTemplate|cat:"containerInner.tpl.html"}-->
 		</div><!--/ #container  -->    	
 		<!--{if $javascriptBottomPage eq true}-->
-		<!--{include file = $settingsTemplate|cat:"JavaScriptActionInfo.tpl.html"}-->
+			<!--{include file = $settingsTemplate|cat:"JavaScriptActionInfo.tpl.html"}-->
 		<!--{/if}-->
-		<!--{include file = $includeTemplate|cat:"google/googleAnalytics.tpl.html"}-->
+		<!--{include file = $settingsTemplate|cat:"google/googleAnalytics.tpl.html"}-->
 	</body>
+	<!--{$ALL_VARS.SiteData|@print_r}-->
 </html>

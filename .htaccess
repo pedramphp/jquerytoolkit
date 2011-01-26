@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+
+Options +FollowSymlinks
+RewriteEngine on
+
+RewriteCond %{SCRIPT_FILENAME} !-d  
+RewriteCond %{SCRIPT_FILENAME} !-f  
+
+RewriteRule ^/?([a-zA-Z0-9_]+)$ ?action=$1 [L]
+#RewriteRule ^(.*)\.htm$ $1.php [L]
+#RewriteRule ^=([^/\.]+)/?$ $1 
+
+</IfModule>

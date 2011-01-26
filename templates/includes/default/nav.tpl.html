@@ -1,0 +1,26 @@
+  <header>
+	<nav id="jq-primaryNav">
+	  <ul>
+	    <!--{foreach from=$SiteData.primaryNav item=nav}-->
+		    <li <!--{if $nav.hasClass}-->class="brdR" <!--{/if}-->> 
+		    	<a <!--{if $nav.active}--> class='current' <!--{/if}--> href='<!--{$nav.url}-->' title='<!--{$nav.title}-->'>
+		    		<span><!--{$nav.value}--></span>
+		    	</a>
+		    </li>
+		<!--{/foreach}-->	    
+	  </ul>
+	</nav>
+	<nav id="jq-secondaryNav" >
+      <ul>
+	    <!--{foreach from=$SiteData.secondaryNav item=nav name=secondNav}-->
+		    <li<!--{if $smarty.foreach.secondNav.last}--> class='last'<!--{/if}-->>
+		    	<a href='<!--{$nav.url}-->' title='<!--{$nav.title}-->'>
+		    		<span><!--{$nav.value}--></span>
+		    	</a>
+		    </li>
+		<!--{/foreach}-->
+      </ul>	  
+	  
+	</nav>
+	<a id="logo" href="<!--{$SiteData.generalLinks.home}-->">jquery toolkit</a>
+  </header>

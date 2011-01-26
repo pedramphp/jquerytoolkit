@@ -1,7 +1,7 @@
 <?php
-// TEST COMMENT HERE!
-  //error_reporting(E_ALL);
-  //ini_set('display_errors', '1');
+
+  error_reporting(E_ALL);
+  ini_set('display_errors', '1');
   $realpath = realpath('.')."/";
   require_once($realpath."LiteFrame/index.php");    
   $LiteFrame =  new LiteFrame();

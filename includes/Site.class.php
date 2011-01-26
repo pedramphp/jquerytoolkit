@@ -84,7 +84,7 @@ class Site extends SiteHelper{
 	
   
   private function generateObject($className, $field) {
-		
+
 		$this->siteObjects[$field] = new $className();
 		
 		self::$siteObjectsData[$field]   = $this->siteObjects[$field]->getResults();

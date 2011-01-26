@@ -42,7 +42,7 @@ class SiteSettings {
 	
 	public function setTemplateColor(){
 		
-		//LiteFrame::IncludeStyle('reset.css','rules.css','default.css','footer.css');
+		LiteFrame::IncludeStyle('reset.css','rules.css','default.css','footer.css');
 		
 	} /* </ SetTemplateColor > */
 	

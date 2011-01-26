@@ -4,16 +4,16 @@
  * Description
  *
  *
- * @name			  PACKAGE NAME
- * @see				  PACKAGE REFFER URL
+ * @name			PACKAGE NAME
+ * @see				PACKAGE REFFER URL
  * @package			PACKAGE
- * @subpackage	SUBPACKAGE
+ * @subpackage		SUBPACKAGE
  * @author			Mahdi Pedramrazi
  * @author			Scott Haselton
  * @category		backend
  * @access			Mexo Programming Team
  * @version			1.0
- * @since			  Dec 21, 2010
+ * @since			Dec 21, 2010
  * @copyright		Mexo LLC
  *
  * @example
@@ -46,7 +46,7 @@ require_once(LiteFrame::GetFileSystemPath()."includes/modules/database/DatabaseS
 
 class SiteHelper {
 	
-	static  $staticObjects = array('SocialLinks','MainNav','Tweets','Title');
+	static  $staticObjects = array('SecondaryNav','PrimaryNav','Tweets','Title','Favorites','SocialLinks','GeneralLinks');
 	static  $tools;
 	public  static $siteObjectsData = null;
 	private $ajaxRequest = false;	
