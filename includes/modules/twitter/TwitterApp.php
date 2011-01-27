@@ -46,6 +46,7 @@ class TwitterApp {
         // default to 0
         $this->state = 0;
         // 2 (authenticated) if the cookies are set
+       
         if(isset($_COOKIE['access_token'], $_COOKIE['access_token_secret'])) {
             $this->state = 2;
         }
@@ -60,8 +61,7 @@ class TwitterApp {
         }
         // verify authentication, clearing cookies if it fails
         elseif($this->state == 2 && !$this->auth()) {
-        	print_r("end_session");
-            $this->endSession();
+        	$this->endSession();
         }
     }
 
@@ -161,6 +161,7 @@ class TwitterApp {
      * @return bool Access token verified
      */
     private function verifyAccessToken() {
+    	
         $this->tmhOAuth->config['user_token'] = isset($_COOKIE['access_token'])? $_COOKIE['access_token'] : $_SESSION['access_token'];
         $this->tmhOAuth->config['user_secret'] = isset($_COOKIE['access_token_secret'])?$_COOKIE['access_token_secret']:$_SESSION['access_token_secret'];
         // send verification request to test access key

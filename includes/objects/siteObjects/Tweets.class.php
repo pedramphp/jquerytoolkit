@@ -61,25 +61,29 @@
 			$_SESSION['authtoken'] = AUTH_TOKEN;
 			$_SESSION['authsecret'] = AUTH_SECRET;
 			$_SESSION['authstate'] = 2;
+			$_SESSION['access_token'] = ACCESS_TOKEN;
+			$_SESSION['access_token_secret'] = ACCESS_TOKEN_SECRET;
 			
-			setcookie("access_token", ACCESS_TOKEN, time()+3600);
-			setcookie("access_token_secret", ACCESS_TOKEN_SECRET, time()+3600);	    
+			//setcookie("access_token", ACCESS_TOKEN, time()+3600);
+			//setcookie("access_token_secret", ACCESS_TOKEN_SECRET, time()+3600);	    
+			//print_r($_COOKIE);
+			
 			$twitterApp = new TwitterApp(new tmhOAuth($config));
 			
 			
 			// you need to call $twitterApp->auth to authorize it first with your browser
 			
 			if($twitterApp->isAuthed()){
-				
 				$tweet = array();
 				foreach( $twitterApp->retrieveTweets() as $row){
 					$tweet[] = $row->text;
 				}
 			}else{
-				$twitterApp->auth();
+			//	$twitterApp->auth();
 			}
 			
 	
+			
 			$this->results = array_slice($tweet, 0, 20);	
 			
 		}

@@ -20,14 +20,14 @@ body {
 #wrapper {
   margin:0 auto;
   width:980px;
-  background:transparent url(../images/bg.jpg) no-repeat;
+  background:transparent url(images/bg.jpg) no-repeat;
 }
 header {
   position:relative;
   height:130px;
 }
 #jq-primaryNav {
-  background:transparent url(../images/nav-bg.gif) left top no-repeat;
+  background:transparent url(images/nav-bg.gif) left top no-repeat;
   height:26px;
   float:right;
   margin-right:50px;
@@ -37,7 +37,7 @@ header {
   float:left;
   padding:0 10px;
   height:26px;
-  background:transparent url(../images/nav-bg-right.gif) right bottom no-repeat;
+  background:transparent url(images/nav-bg-right.gif) right bottom no-repeat;
 }
 #jq-primaryNav ul li {
   float:left;
@@ -82,9 +82,9 @@ header {
 
 
 #logo {
-  position:absolute; top:55px; left:40px;
-  background:transparent url(images/logo.png) no-repeat;  
-  width:242px; height:64px;
+  position:absolute; top:44px; left:40px;
+  background:transparent url(images/jquerytoolkit_logo.png) no-repeat;  
+  width:260px; height:83px;
   text-indent:-999em;
   overflow:hidden;
 }
@@ -396,7 +396,7 @@ a.btn span {
   padding:10px;
 }
 #footer section#bottom .jQueryTK{
-  background:transparent url(images/logo-jqtk.png) left center no-repeat;
+  background:transparent url(images/jquerytoolkit-logo-small.png) left center no-repeat;
   width:250px;
   padding:5px 0 5px 210px; margin-right:20px;
   font-size:12px; line-height:18px;
