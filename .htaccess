@@ -10,5 +10,5 @@ RewriteRule ^/?([a-zA-Z0-9_]+)$ ?action=$1 [L]
 #RewriteRule ^(.*)\.htm$ $1.php [L]
 #RewriteRule ^=([^/\.]+)/?$ $1
 
-
+ErrorDocument 404 /?action=404
 </IfModule>
