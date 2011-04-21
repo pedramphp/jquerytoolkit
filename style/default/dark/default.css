@@ -22,10 +22,11 @@ body {
   width:980px;
   background:transparent url(images/bg.jpg) no-repeat;
 }
-header {
+header#homeHeader {
   position:relative;
   height:130px;
 }
+
 #jq-primaryNav {
   background:transparent url(images/nav-bg.gif) left top no-repeat;
   height:26px;

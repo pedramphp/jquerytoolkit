@@ -1,7 +1,13 @@
-#aboutSection header#aboutHeader{
-	margin-bottom: 10px; padding: 10px;
-    border-bottom: 2px solid #333
+#aboutSection{
+	padding:10px
 }
+
+#aboutSection header#aboutHeader{
+   border-bottom: 2px solid #333333;
+   margin-bottom: 10px;o
+   padding-bottom: 10px;}
+
+header#aboutHeader h2{ margin-bottom: 15px; font-size: 27px; }
 
 #aboutSection section {
 	margin-bottom: 50px;
