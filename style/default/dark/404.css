@@ -1,0 +1,14 @@
+.undercnst {
+	background: url("images/404/bg_underconstruction.png") no-repeat;
+	margin: 50px auto;
+	width: 620px; height: 180px;
+	text-align: center;
+}
+.undercnst h5 {
+	padding: 15px 0;
+	font-size: 18px;
+}
+.undercnst p {
+	margin: 34px auto;
+	width: 480px;
+}
