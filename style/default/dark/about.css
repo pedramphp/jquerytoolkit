@@ -1,0 +1,62 @@
+#aboutHeader{
+	padding: 10px;
+}
+
+#aboutSection section {
+	margin-bottom: 50px;
+}
+
+.aboutLeft {	
+	float: left;
+	width: 154px;
+	text-align: center;
+}
+
+.aboutLeft h6 {
+	font-size: 1.2em
+}
+
+.aboutLeft span {
+	color: #999;
+	font-size: .9em
+}
+
+.memberPic {
+	background: url("images/about/bg_member.png") no-repeat;
+	width: 154px; height: 170px;
+}
+.memberPic img{
+	margin: 15px;
+}
+
+.aboutRight {
+	float: left;
+	width: 80%;
+	padding-top: 15px;
+	margin-left: 20px;
+	position: relative;
+}
+
+.aboutRight p { margin-bottom: 10px}
+
+.aboutRight .memberLinks {
+	background: transparent url("images/about/bg_behind-social.png") top;
+	width: 100%;
+	height: 38px;
+	top: 161px;
+	position: absolute;
+}
+
+.memberLinks a {
+	background: url("images/about/icon_socials.png") no-repeat;
+	width: 32px; height: 32px;
+	margin-left: 10px;
+	float: right;
+	text-indent: -9999px;
+}
+
+.memberLinks a.website { background-position: -174px 0 }
+.memberLinks a.mail { background-position: -131px }
+.memberLinks a.linkedin { background-position: -87px 0 }
+.memberLinks a.twitter { background-position: -44px 0 }
+.memberLinks a.facebook { background-position: 0 0 }

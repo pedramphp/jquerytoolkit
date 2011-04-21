@@ -39,7 +39,7 @@
 					'active' => false );
 			
 			$links[4] = array(
-					'url' => '#',   
+					'url' => '?action=about',   
 					'value' => 'About',
 					'hasClass' => false, 
 					'title' => '',
