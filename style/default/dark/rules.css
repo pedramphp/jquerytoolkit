@@ -36,10 +36,10 @@ mark {
 
 strong, th { font-weight: bold; }
 
-/* These selection declarations have to be separate. */
+/* These selection declarations have to be separate.
 ::-moz-selection{ background: #FFC3D9; color:#fff; text-shadow: none; }
 ::selection {     background: #FFC3D9;  color:#fff; text-shadow: none; } 
-
+ */
 a:link { -webkit-tap-highlight-color: #FF5E99; }
 
 

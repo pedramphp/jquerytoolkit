@@ -47,6 +47,8 @@ class SiteSettings {
 	} /* </ SetTemplateColor > */
 	
 	public function setCoreJavascript(){
+		LiteFrame::IncludeLibraryJavascript('jquery/jquery-1.5.2.min.js');
+		LiteFrame::IncludeJavascript('default.js');
 		/*
 		LiteFrame::IncludeLibraryJavascript('jquery/jquery-1.4.4.min.js');
 		LiteFrame::IncludeLibraryJavascript('plugins/jquery.gotop.js');

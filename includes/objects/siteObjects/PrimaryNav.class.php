@@ -11,7 +11,7 @@
 			
 			$links = array();
 			$links[0] = array(
-				'url' => 'jquery.com',  
+				'url' => 'http://jquery.com',  
 				'value' => 'jQuery', 
 				'hasClass' => false, 
 				'title' => '',
@@ -39,7 +39,7 @@
 					'active' => false );
 			
 			$links[4] = array(
-					'url' => '?action=about',   
+					'url' => LiteFrame::GetApplicationPath().'about',   
 					'value' => 'About',
 					'hasClass' => false, 
 					'title' => '',
